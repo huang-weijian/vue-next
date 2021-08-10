@@ -14,6 +14,7 @@ export class EffectScope {
   /**
    * track a child scope's index in its parent's scopes array for optimized
    * removal
+   * 在父作用域数组中跟踪子作用域的索引以优化删除
    */
   private index: number | undefined
 

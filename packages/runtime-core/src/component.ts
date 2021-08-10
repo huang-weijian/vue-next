@@ -94,10 +94,12 @@ export interface ComponentInternalOptions {
    */
   __hmrId?: string
   /**
+   * 仅限于兼容打包
    * Compat build only, for bailing out of certain compatibility behavior
    */
   __isBuiltIn?: boolean
   /**
+   * 方便dev-tool使用
    * This one should be exposed so that devtools can make use of it
    */
   __file?: string
@@ -207,10 +209,12 @@ export interface ComponentInternalInstance {
   root: ComponentInternalInstance
   appContext: AppContext
   /**
+   * 在其父级vdom树中表示此组件的Vnode
    * Vnode representing this component in its parent's vdom tree
    */
   vnode: VNode
   /**
+   * 来自父级的挂起的新vnode更新
    * The pending new vnode from parent updates
    * @internal
    */

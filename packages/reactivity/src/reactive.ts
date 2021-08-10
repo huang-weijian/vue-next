@@ -14,9 +14,13 @@ import {
 import { UnwrapRefSimple, Ref } from './ref'
 
 export const enum ReactiveFlags {
+  // 不可被设为响应式，// 这个属性值为 true 的对象 都会被跳过代理
   SKIP = '__v_skip',
+  // reactive类型
   IS_REACTIVE = '__v_isReactive',
+  // readonly类型
   IS_READONLY = '__v_isReadonly',
+  // 这个属性会应用到原始对象
   RAW = '__v_raw'
 }
 
@@ -33,8 +37,13 @@ export const readonlyMap = new WeakMap<Target, any>()
 export const shallowReadonlyMap = new WeakMap<Target, any>()
 
 const enum TargetType {
+  // 无效的
   INVALID = 0,
+  // 公用型
+  // Object、Array
   COMMON = 1,
+  // 容器型
+  // Map、Set、WeakMap、WeakSet
   COLLECTION = 2
 }
 
@@ -49,11 +58,13 @@ function targetTypeMap(rawType: string) {
     case 'WeakSet':
       return TargetType.COLLECTION
     default:
+      // 基本类型无法变成响应式
       return TargetType.INVALID
   }
 }
 
 function getTargetType(value: Target) {
+  // 如果是可跳过的目标，或者是不可扩展的对象，则target无效
   return value[ReactiveFlags.SKIP] || !Object.isExtensible(value)
     ? TargetType.INVALID
     : targetTypeMap(toRawType(value))
@@ -87,6 +98,7 @@ export type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRefSimple<T>
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
   // if trying to observe a readonly proxy, return the readonly version.
+  // 如果是只读的响应式对象
   if (target && (target as Target)[ReactiveFlags.IS_READONLY]) {
     return target
   }
@@ -177,6 +189,7 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
+  // 非对象不可被设置为响应式
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -185,6 +198,7 @@ function createReactiveObject(
   }
   // target is already a Proxy, return it.
   // exception: calling readonly() on a reactive object
+  // 如果target已经是响应式对象，则返回target
   if (
     target[ReactiveFlags.RAW] &&
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
@@ -192,19 +206,23 @@ function createReactiveObject(
     return target
   }
   // target already has corresponding Proxy
+  // target是已存在的响应式对象则直接返回
   const existingProxy = proxyMap.get(target)
   if (existingProxy) {
     return existingProxy
   }
   // only a whitelist of value types can be observed.
+  // 只有白名单上的类型可以被设置为响应式
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
   }
   const proxy = new Proxy(
     target,
+    // 根据对象的类型设置不同的proxy handler
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  // 添加到对应的weakMap
   proxyMap.set(target, proxy)
   return proxy
 }
@@ -217,18 +235,24 @@ export function isReactive(value: unknown): boolean {
 }
 
 export function isReadonly(value: unknown): boolean {
+  // 如果value存在，且IS_READONLY为true
   return !!(value && (value as Target)[ReactiveFlags.IS_READONLY])
 }
 
 export function isProxy(value: unknown): boolean {
+  // 是reactive的或者是readonly的
   return isReactive(value) || isReadonly(value)
 }
 
 export function toRaw<T>(observed: T): T {
+  // 如果参数不存在则直接返回参数
+  // 如果参数存在则判断是否是响应式对象
+  // 是响应式对象则再走一轮
   const raw = observed && (observed as Target)[ReactiveFlags.RAW]
   return raw ? toRaw(raw) : observed
 }
 
+// 标记对象为不可被设置为响应式
 export function markRaw<T extends object>(value: T): T {
   def(value, ReactiveFlags.SKIP, true)
   return value

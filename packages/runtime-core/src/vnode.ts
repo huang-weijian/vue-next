@@ -337,6 +337,7 @@ export function isVNode(value: any): value is VNode {
 }
 
 export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
+  // 如果是开发模式且在热更新，强制组件重载
   if (
     __DEV__ &&
     n2.shapeFlag & ShapeFlags.COMPONENT &&

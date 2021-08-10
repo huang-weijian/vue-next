@@ -47,6 +47,8 @@ const isComment = (node: Node): node is Comment =>
 // it out creates a ton of unnecessary complexity.
 // Hydration also depends on some renderer internal logic which needs to be
 // passed in via arguments.
+// hydration即水合，实例化好对象后，为对象提供数据填充
+// 某些时候并不需要太多的数据，只是需要一部分数据，那么只针对需要的数据做水合可减少很多消耗
 export function createHydrationFunctions(
   rendererInternals: RendererInternals<Node, Element>
 ) {

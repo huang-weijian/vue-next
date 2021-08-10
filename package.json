@@ -20,6 +20,7 @@
     "serve-sfc-playground": "vite packages/sfc-playground",
     "serve": "serve",
     "open": "open http://localhost:5000/packages/template-explorer/local.html",
+    "open-dev": "open http://localhost:5000/packages/vue/examples/index.html",
     "preinstall": "node ./scripts/checkYarn.js",
     "prebuild-sfc-playground": "node scripts/build.js compiler shared -af cjs && node scripts/build.js runtime reactivity shared -af esm-bundler && node scripts/build.js vue -f esm-bundler-runtime && node scripts/build.js vue -f esm-browser-runtime && node scripts/build.js compiler-sfc -f esm-browser",
     "build-sfc-playground": "cd packages/sfc-playground && vite build"

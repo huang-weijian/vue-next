@@ -29,9 +29,11 @@ type RefBase<T> = {
 export function trackRefValue(ref: RefBase<any>) {
   if (isTracking()) {
     ref = toRaw(ref)
+    // 如果没有Dep，就新创一个
     if (!ref.dep) {
       ref.dep = createDep()
     }
+    // 开发模式下的debug胸袭
     if (__DEV__) {
       trackEffects(ref.dep, {
         target: ref,
@@ -68,6 +70,7 @@ export type ToRefs<T = any> = {
 }
 
 const convert = <T extends unknown>(val: T): T =>
+  // 如果是Object，则响应式化
   isObject(val) ? reactive(val) : val
 
 export function isRef<T>(r: Ref<T> | unknown): r is Ref<T>
@@ -91,11 +94,13 @@ export function shallowRef(value?: unknown) {
   return createRef(value, true)
 }
 
+// Ref类型实现
 class RefImpl<T> {
   private _value: T
   private _rawValue: T
 
   public dep?: Dep = undefined
+  // Ref类型的标志
   public readonly __v_isRef = true
 
   constructor(value: T, public readonly _shallow = false) {
@@ -119,6 +124,7 @@ class RefImpl<T> {
 }
 
 function createRef(rawValue: unknown, shallow = false) {
+  // 如果已经是Ref类型，直接返回
   if (isRef(rawValue)) {
     return rawValue
   }
@@ -206,6 +212,7 @@ export function toRefs<T extends object>(object: T): ToRefs<T> {
 class ObjectRefImpl<T extends object, K extends keyof T> {
   public readonly __v_isRef = true
 
+  // 实际引用的还是原本传入的响应式对象的值，所以还有响应式效果
   constructor(private readonly _object: T, private readonly _key: K) {}
 
   get value() {

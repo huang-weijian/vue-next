@@ -32,6 +32,7 @@ let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 
 let enabledHydration = false
 
+// 单例renderer
 function ensureRenderer() {
   return (
     renderer ||
@@ -57,9 +58,12 @@ export const hydrate = ((...args) => {
 }) as RootHydrateFunction
 
 export const createApp = ((...args) => {
+  // 创建组件开始 start
   const app = ensureRenderer().createApp(...args)
 
+  // 如果是dev模式
   if (__DEV__) {
+    // 是否是原生html标签
     injectNativeTagCheck(app)
     injectCompilerOptionsCheck(app)
   }
@@ -134,6 +138,7 @@ function injectNativeTagCheck(app: App) {
 
 // dev only
 function injectCompilerOptionsCheck(app: App) {
+  // 只有使用vue-runtime，即vue单文件组件
   if (isRuntimeOnly()) {
     const isCustomElement = app.config.isCustomElement
     Object.defineProperty(app.config, 'isCustomElement', {
@@ -148,6 +153,7 @@ function injectCompilerOptionsCheck(app: App) {
       }
     })
 
+    // compilerOptions只在runtime形式有效
     const compilerOptions = app.config.compilerOptions
     const msg =
       `The \`compilerOptions\` config option is only respected when using ` +

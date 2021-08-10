@@ -1,4 +1,5 @@
 // Global compile-time constants
+// 全局的编译时常量
 declare var __DEV__: boolean
 declare var __TEST__: boolean
 declare var __BROWSER__: boolean
@@ -11,6 +12,7 @@ declare var __VERSION__: string
 declare var __COMPAT__: boolean
 
 // Feature flags
+// 特性flag，有无用工具等
 declare var __FEATURE_OPTIONS_API__: boolean
 declare var __FEATURE_PROD_DEVTOOLS__: boolean
 declare var __FEATURE_SUSPENSE__: boolean

@@ -118,23 +118,36 @@ export interface RendererOptions<
     parentSuspense?: SuspenseBoundary | null,
     unmountChildren?: UnmountChildrenFn
   ): void
+
   insert(el: HostNode, parent: HostElement, anchor?: HostNode | null): void
+
   remove(el: HostNode): void
+
   createElement(
     type: string,
     isSVG?: boolean,
     isCustomizedBuiltIn?: string,
     vnodeProps?: (VNodeProps & { [key: string]: any }) | null
   ): HostElement
+
   createText(text: string): HostNode
+
   createComment(text: string): HostNode
+
   setText(node: HostNode, text: string): void
+
   setElementText(node: HostElement, text: string): void
+
   parentNode(node: HostNode): HostElement | null
+
   nextSibling(node: HostNode): HostNode | null
+
   querySelector?(selector: string): HostElement | null
+
   setScopeId?(el: HostElement, id: string): void
+
   cloneNode?(node: HostNode): HostNode
+
   insertStaticContent?(
     content: string,
     parent: HostElement,
@@ -336,10 +349,12 @@ function baseCreateRenderer(
   createHydrationFns?: typeof createHydrationFunctions
 ): any {
   // compile-time feature flags check
+  // 如果是ESM模式，且不是test模式
   if (__ESM_BUNDLER__ && !__TEST__) {
     initFeatureFlags()
   }
 
+  // 如果是dev模式，则设置dev-tool的hook
   if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
     const target = getGlobalThis()
     target.__VUE__ = true
@@ -379,6 +394,7 @@ function baseCreateRenderer(
       return
     }
 
+    // 在对比中，且不是一样的类型，卸载旧树
     // patching & not same type, unmount old tree
     if (n1 && !isSameVNodeType(n1, n2)) {
       anchor = getNextHostNode(n1)
@@ -393,12 +409,15 @@ function baseCreateRenderer(
 
     const { type, ref, shapeFlag } = n2
     switch (type) {
+      // 如果是文本节点
       case Text:
         processText(n1, n2, container, anchor)
         break
+      // 如果是注释节点
       case Comment:
         processCommentNode(n1, n2, container, anchor)
         break
+      // 非响应式的静态节点
       case Static:
         if (n1 == null) {
           mountStaticNode(n2, container, anchor, isSVG)
@@ -406,6 +425,7 @@ function baseCreateRenderer(
           patchStaticNode(n1, n2, container, isSVG)
         }
         break
+      // 多个根节点
       case Fragment:
         processFragment(
           n1,
@@ -445,6 +465,7 @@ function baseCreateRenderer(
             optimized
           )
         } else if (shapeFlag & ShapeFlags.TELEPORT) {
+          // teleport组件
           ;(type as typeof TeleportImpl).process(
             n1 as TeleportVNode,
             n2 as TeleportVNode,
@@ -458,6 +479,7 @@ function baseCreateRenderer(
             internals
           )
         } else if (__FEATURE_SUSPENSE__ && shapeFlag & ShapeFlags.SUSPENSE) {
+          // suspense组件
           ;(type as typeof SuspenseImpl).process(
             n1,
             n2,
@@ -476,6 +498,7 @@ function baseCreateRenderer(
     }
 
     // set ref
+    // 如果有ref prop，且有父组件
     if (ref != null && parentComponent) {
       setRef(ref, n1 && n1.ref, parentSuspense, n2 || n1, !n2)
     }
@@ -489,6 +512,13 @@ function baseCreateRenderer(
         anchor
       )
     } else {
+      // 感叹号(非空断言操作符) ，因为n1.el是常量，如果n1.el可能为空，可以用这个，如果为空，会丢出断言失败
+      // let s = e.name;，编译器会抛出e可能不存在的错误，但是使用非空断言，则表示e肯定是存在的，从而不会产生编译问题
+      // 相当于
+      // if (n1.el) {
+      //   n2.el = n1.le
+      // }
+      // const el = n2.el
       const el = (n2.el = n1.el!)
       if (n2.children !== n1.children) {
         hostSetText(el, n2.children as string)
