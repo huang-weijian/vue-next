@@ -201,6 +201,7 @@ function createReactiveObject(
   // 如果target已经是响应式对象，则返回target
   if (
     target[ReactiveFlags.RAW] &&
+    // 要创建readonly且目标已是响应式对象
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
   ) {
     return target

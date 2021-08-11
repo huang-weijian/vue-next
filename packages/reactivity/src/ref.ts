@@ -70,7 +70,7 @@ export type ToRefs<T = any> = {
 }
 
 const convert = <T extends unknown>(val: T): T =>
-  // 如果是Object，则响应式化
+  // typeof等于object，则响应式化
   isObject(val) ? reactive(val) : val
 
 export function isRef<T>(r: Ref<T> | unknown): r is Ref<T>

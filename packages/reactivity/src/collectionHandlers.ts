@@ -37,11 +37,15 @@ function get(
   // #1772: readonly(reactive(Map)) should return readonly + reactive version
   // of the value
   target = (target as any)[ReactiveFlags.RAW]
+  // 获得源数据
   const rawTarget = toRaw(target)
+  // 获得key的源数据
   const rawKey = toRaw(key)
+  // 如果key和源key不一致，那就key和源key
   if (key !== rawKey) {
     !isReadonly && track(rawTarget, TrackOpTypes.GET, key)
   }
+  // 非只读
   !isReadonly && track(rawTarget, TrackOpTypes.GET, rawKey)
   const { has } = getProto(rawTarget)
   const wrap = isShallow ? toShallow : isReadonly ? toReadonly : toReactive
@@ -90,6 +94,7 @@ function add(this: SetTypes, value: unknown) {
 function set(this: MapTypes, key: unknown, value: unknown) {
   value = toRaw(value)
   const target = toRaw(this)
+  // 获取原型上的方法
   const { has, get } = getProto(target)
 
   let hadKey = has.call(target, key)
@@ -102,6 +107,7 @@ function set(this: MapTypes, key: unknown, value: unknown) {
 
   const oldValue = get.call(target, key)
   target.set(key, value)
+  // 如果没有改key，则是add，有则是重新设置值
   if (!hadKey) {
     trigger(target, TriggerOpTypes.ADD, key, value)
   } else if (hasChanged(value, oldValue)) {
