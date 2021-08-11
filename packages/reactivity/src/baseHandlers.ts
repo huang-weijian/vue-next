@@ -156,6 +156,7 @@ function createGetter(isReadonly = false, shallow = false) {
       // here to avoid invalid value warning. Also need to lazy access readonly
       // and reactive here to avoid circular dependency.
       // 将返回值变为响应式
+      // 递归处理，当reactive对象是深层次时
       return isReadonly ? readonly(res) : reactive(res)
     }
 

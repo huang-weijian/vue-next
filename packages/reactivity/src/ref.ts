@@ -96,7 +96,9 @@ export function shallowRef(value?: unknown) {
 
 // Ref类型实现
 class RefImpl<T> {
+  // 可能和原始数据相同，也可能是响应式对象
   private _value: T
+  // 原始数据
   private _rawValue: T
 
   public dep?: Dep = undefined
@@ -105,6 +107,7 @@ class RefImpl<T> {
 
   constructor(value: T, public readonly _shallow = false) {
     this._rawValue = _shallow ? value : toRaw(value)
+    // 浅表对象直接存储源数据，否则进行 reactive 化
     this._value = _shallow ? value : convert(value)
   }
 
@@ -136,6 +139,7 @@ export function triggerRef(ref: Ref) {
 }
 
 export function unref<T>(ref: T | Ref<T>): T {
+  // 如果是Ref类型，就取出value值，不然直接返回
   return isRef(ref) ? (ref.value as any) : ref
 }
 
@@ -143,6 +147,8 @@ const shallowUnwrapHandlers: ProxyHandler<any> = {
   get: (target, key, receiver) => unref(Reflect.get(target, key, receiver)),
   set: (target, key, value, receiver) => {
     const oldValue = target[key]
+    // 如果旧值不是 Ref 类型，新值也不是 Ref 类型
+    // 直接更新旧值
     if (isRef(oldValue) && !isRef(value)) {
       oldValue.value = value
       return true
