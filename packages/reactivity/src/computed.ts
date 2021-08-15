@@ -35,6 +35,8 @@ class ComputedRefImpl<T> {
     private readonly _setter: ComputedSetter<T>,
     isReadonly: boolean
   ) {
+    // getter就是computed的参数
+    // 自定义调度器
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {
         this._dirty = true
@@ -46,6 +48,7 @@ class ComputedRefImpl<T> {
 
   get value() {
     // the computed ref may get wrapped by other proxies e.g. readonly() #3376
+    // 计算出的ref可能会被其他代理包裹
     const self = toRaw(this)
     trackRefValue(self)
     if (self._dirty) {

@@ -27,18 +27,27 @@ import { ObjectEmitsOptions } from './componentEmits'
 export interface App<HostElement = any> {
   version: string
   config: AppConfig
+
   use(plugin: Plugin, ...options: any[]): this
+
   mixin(mixin: ComponentOptions): this
+
   component(name: string): Component | undefined
+
   component(name: string, component: Component): this
+
   directive(name: string): Directive | undefined
+
   directive(name: string, directive: Directive): this
+
   mount(
     rootContainer: HostElement | string,
     isHydrate?: boolean,
     isSVG?: boolean
   ): ComponentPublicInstance
+
   unmount(): void
+
   provide<T>(key: InjectionKey<T> | string, value: T): this
 
   // internal, but we need to expose these for the server-renderer and devtools
@@ -53,6 +62,7 @@ export interface App<HostElement = any> {
    * v2 compat only
    */
   filter?(name: string): Function | undefined
+
   filter?(name: string, filter: Function): this
 
   /**
@@ -178,16 +188,20 @@ export function createAppAPI<HostElement>(
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   return function createApp(rootComponent, rootProps = null) {
+    // rootProps是传递给根组件的props
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
       rootProps = null
     }
 
+    // 创建一个空的context
     const context = createAppContext()
+    // 已安装的plugin
     const installedPlugins = new Set()
 
     let isMounted = false
 
+    // 给context的app赋值
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -211,11 +225,14 @@ export function createAppAPI<HostElement>(
       },
 
       use(plugin: Plugin, ...options: any[]) {
+        // 已经有了一样的plugin
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
+          // 如果是带install的
         } else if (plugin && isFunction(plugin.install)) {
           installedPlugins.add(plugin)
           plugin.install(app, ...options)
+          // 如果只是一个函数
         } else if (isFunction(plugin)) {
           installedPlugins.add(plugin)
           plugin(app, ...options)
@@ -246,11 +263,14 @@ export function createAppAPI<HostElement>(
 
       component(name: string, component?: Component): any {
         if (__DEV__) {
+          // 验证组件名
           validateComponentName(name, context.config)
         }
+        // 获取指定name的组件
         if (!component) {
           return context.components[name]
         }
+        // 已有同名组件
         if (__DEV__ && context.components[name]) {
           warn(`Component "${name}" has already been registered in target app.`)
         }
@@ -260,12 +280,14 @@ export function createAppAPI<HostElement>(
 
       directive(name: string, directive?: Directive) {
         if (__DEV__) {
+          // 验证指令名
           validateDirectiveName(name)
         }
 
         if (!directive) {
           return context.directives[name] as any
         }
+        // 已有同名指令
         if (__DEV__ && context.directives[name]) {
           warn(`Directive "${name}" has already been registered in target app.`)
         }

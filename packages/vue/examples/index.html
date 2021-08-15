@@ -7,48 +7,33 @@
   </head>
   <body>
     <div id="app">
-      <div>{{ info.name }}</div>
-      <input type="text" v-model="info.name" />
-      <span>job length:{{ job.length }}</span>
-      <button @click="()=>job.push(1)">job++</button>
-      <div>
-        count:{{ count }}
-        <button @click="count++">count++</button>
-      </div>
-      <div>
-        map :{{ [...map] }}
-        <div v-for="(entity,idx) in map" :key="entity[0]">
-          key:{{ entity[0] }},val:{{ entity[1] }}
-        </div>
-        <button @click="map.set(new Date().getTime(),new Date().getTime())">
-          map set
-        </button>
-      </div>
+      <h3>我是app</h3>
+      <child>
+        <div>{{ name }}</div>
+        <div>name的弟弟</div>
+        <template v-slot:one>
+          <div>one 插槽</div>
+        </template>
+      </child>
     </div>
     <script>
       const app = Vue.createApp({
         data() {
           return {
-            info: {
-              name: 'huang-weijian'
-            },
-            job: [],
-            map: new Map([['address', '123']])
+            name: 'huang-weijian'
           }
         },
         watch: {},
-        setup() {
-          let count = Vue.ref(0)
-          Vue.watch(count, (n, o) => {
-            console.info(n, o)
-          })
-          let refMap = Vue.ref(new Map())
-          console.info(refMap.value.set)
-          return {
-            count
-          }
-        },
+        setup() {},
         created() {}
+      })
+      app.component('child', {
+        template: `
+            <div>
+              <div>我是Child</div>
+              <slot></slot>
+              <slot name='one'></slot>
+            </div>`
       })
       app.mount('#app')
     </script>

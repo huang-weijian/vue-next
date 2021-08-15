@@ -95,10 +95,12 @@ export const createApp = ((...args) => {
       }
     }
 
+    // 在挂载之前清除容器的自元素
     // clear content before mounting
     container.innerHTML = ''
     const proxy = mount(container, false, container instanceof SVGElement)
     if (container instanceof Element) {
+      // 售后工作
       container.removeAttribute('v-cloak')
       container.setAttribute('data-v-app', '')
     }

@@ -243,6 +243,7 @@ export function trackEffects(
   // 如果依赖深度小于最大递归深度
   if (effectTrackDepth <= maxMarkerBits) {
     if (!newTracked(dep)) {
+      // 重新跟踪
       dep.n |= trackOpBit // set newly tracked
       shouldTrack = !wasTracked(dep)
     }

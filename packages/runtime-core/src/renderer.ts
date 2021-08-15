@@ -306,7 +306,12 @@ export const queuePostRenderEffect = __FEATURE_SUSPENSE__
  * host environment. For example, for runtime-dom, HostNode would be the DOM
  * `Node` interface and HostElement would be the DOM `Element` interface.
  *
+ * createRenderer函数接受两个通用参数：HostNode和HostElement，对应于主机环境中的节点和元素类型。
+ * 例如，对于运行时dom，HostNode将是dom`Node`接口，HostElement将是dom`Element`接口
+ *
  * Custom renderers can pass in the platform specific types like this:
+ *
+ * 自定义渲染器可以传入特定于平台的类型，如下所示：
  *
  * ``` js
  * const { render, createApp } = createRenderer<Node, Element>({
@@ -378,7 +383,9 @@ function baseCreateRenderer(
   } = options
 
   // Note: functions inside this closure should use `const xxx = () => {}`
+  // 注意：此闭包中的函数应使用箭头函数变量
   // style in order to prevent being inlined by minifiers.
+  // 防止内联
   const patch: PatchFn = (
     n1,
     n2,
@@ -2326,10 +2333,12 @@ function baseCreateRenderer(
 
   const render: RootRenderFunction = (vnode, container, isSVG) => {
     if (vnode == null) {
+      // 如果已有渲染节点，先卸载
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
     } else {
+      // 初次渲染
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()

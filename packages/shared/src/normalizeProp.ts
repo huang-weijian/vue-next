@@ -3,6 +3,7 @@ import { isNoUnitNumericStyleProp } from './domAttrConfig'
 
 export type NormalizedStyle = Record<string, string | number>
 
+// 将style转化为规范对象
 export function normalizeStyle(
   value: unknown
 ): NormalizedStyle | string | undefined {
@@ -62,6 +63,7 @@ export function stringifyStyle(
   return ret
 }
 
+// 将class属性值转化为字符串
 export function normalizeClass(value: unknown): string {
   let res = ''
   if (isString(value)) {

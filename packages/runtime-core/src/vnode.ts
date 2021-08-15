@@ -54,6 +54,7 @@ export const Text = Symbol(__DEV__ ? 'Text' : undefined)
 export const Comment = Symbol(__DEV__ ? 'Comment' : undefined)
 export const Static = Symbol(__DEV__ ? 'Static' : undefined)
 
+// vnode的类型
 export type VNodeTypes =
   | string
   | VNode
@@ -133,6 +134,7 @@ export interface VNode<
 
   /**
    * @internal
+   * 不可被设置为响应式对象
    */
   [ReactiveFlags.SKIP]: true
 
@@ -143,6 +145,8 @@ export interface VNode<
   /**
    * SFC only. This is assigned on vnode creation using currentScopeId
    * which is set alongside currentRenderingInstance.
+   *
+   * 只限单文件组件，这是在使用currentScopeId创建vnode时指定的，该ID与currentRenderingInstance一起设置
    */
   scopeId: string | null
   /**
@@ -151,6 +155,8 @@ export interface VNode<
    * - Component vnodes (during patch/hydration) so that its root node can
    *   inherit the component's slotScopeIds
    * @internal
+   *
+   * 只限单文件组件
    */
   slotScopeIds: string[] | null
   children: VNodeNormalizedChildren
@@ -165,6 +171,8 @@ export interface VNode<
   targetAnchor: HostNode | null // teleport target anchor
   /**
    * number of elements contained in a static vnode
+   *
+   * 静态vnode中包含的元素数
    * @internal
    */
   staticCount: number
@@ -730,6 +738,7 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
     children = null
   } else if (isArray(children)) {
     type = ShapeFlags.ARRAY_CHILDREN
+    // 有多个插槽，所以是个对象
   } else if (typeof children === 'object') {
     if (shapeFlag & ShapeFlags.ELEMENT || shapeFlag & ShapeFlags.TELEPORT) {
       // Normalize slot to plain children for plain element and Teleport

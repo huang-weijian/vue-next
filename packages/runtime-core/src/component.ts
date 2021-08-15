@@ -109,6 +109,7 @@ export interface FunctionalComponent<P = {}, E extends EmitsOptions = {}>
   extends ComponentInternalOptions {
   // use of any here is intentional so it can be a valid JSX Element constructor
   (props: P, ctx: Omit<SetupContext<E>, 'expose'>): any
+
   props?: ComponentPropsOptions<P>
   emits?: E | (keyof E)[]
   inheritAttrs?: boolean
@@ -117,6 +118,7 @@ export interface FunctionalComponent<P = {}, E extends EmitsOptions = {}>
 
 export interface ClassComponent {
   new (...args: any[]): ComponentPublicInstance<any, any, any, any, any>
+
   __vccOpts: ComponentOptions
 }
 
@@ -125,6 +127,8 @@ export interface ClassComponent {
  * object, or a function. Use this where the code expects to work with actual
  * values, e.g. checking if its a function or not. This is mostly for internal
  * implementation code.
+ * 具体组件类型与其实际值匹配：它要么是选项对象，要么是函数。
+ * 在代码希望处理实际值的情况下使用此选项，例如，检查其是否为函数。这主要用于内部实现代码
  */
 export type ConcreteComponent<
   Props = {},
@@ -139,6 +143,7 @@ export type ConcreteComponent<
 /**
  * A type used in public APIs where a component type is expected.
  * The constructor type is an artificial type returned by defineComponent().
+ * 在公共API中使用的类型，其中需要组件类型。构造函数类型是defineComponent（）返回的人工类型
  */
 export type Component<
   Props = any,
@@ -559,6 +564,7 @@ const isBuiltInTag = /*#__PURE__*/ makeMap('slot,component')
 
 export function validateComponentName(name: string, config: AppConfig) {
   const appIsNativeTag = config.isNativeTag || NO
+  // 是否是vue保留标签或原生标签
   if (isBuiltInTag(name) || appIsNativeTag(name)) {
     warn(
       'Do not use built-in or reserved HTML elements as component id: ' + name

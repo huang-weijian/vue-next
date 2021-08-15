@@ -24,6 +24,7 @@ const flush = () => {
   queued = false
 }
 
+// 延迟计算的 computed Ref
 class DeferredComputedRefImpl<T> {
   public dep?: Dep = undefined
 
