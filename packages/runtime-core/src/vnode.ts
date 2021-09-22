@@ -367,8 +367,13 @@ let vnodeArgsTransformer:
 /**
  * Internal API for registering an arguments transform for createVNode
  * used for creating stubs in the test-utils
+ *
+ * 用于注册createVNode的参数转换的内部API，该转换用于在测试UTIL中创建存根
+ *
  * It is *internal* but needs to be exposed for test-utils to pick up proper
  * typings
+ *
+ * 它是内部的，但需要暴露出来，以便测试UTIL获取正确的键入
  */
 export function transformVNodeArgs(transformer?: typeof vnodeArgsTransformer) {
   vnodeArgsTransformer = transformer
@@ -498,6 +503,7 @@ function _createVNode(
   dynamicProps: string[] | null = null,
   isBlockNode = false
 ): VNode {
+  // VNode 类型不合法
   if (!type || type === NULL_DYNAMIC_COMPONENT) {
     if (__DEV__ && !type) {
       warn(`Invalid vnode type when creating vnode: ${type}.`)
@@ -505,10 +511,13 @@ function _createVNode(
     type = Comment
   }
 
+  // 如果 type 是 vnode
   if (isVNode(type)) {
+    // createVNode 接受一个已存在的vnode，这发生在类似 <component :is="vnode"/> 的情况
     // createVNode receiving an existing vnode. This happens in cases like
     // <component :is="vnode"/>
     // #2078 make sure to merge refs during the clone instead of overwriting it
+    // 请确保在克隆过程中合并引用，而不是覆盖它
     const cloned = cloneVNode(type, props, true /* mergeRef: true */)
     if (children) {
       normalizeChildren(cloned, children)
@@ -517,15 +526,18 @@ function _createVNode(
   }
 
   // class component normalization.
+  // 如果是 class component
   if (isClassComponent(type)) {
     type = type.__vccOpts
   }
 
+  // 兼容 vue2.x 的 async functional 组件
   // 2.x async/functional component compat
   if (__COMPAT__) {
     type = convertLegacyComponent(type, currentRenderingInstance)
   }
 
+  // 处理 style 和 class 属性
   // class & style normalization.
   if (props) {
     // for reactive or proxy objects, we need to clone it to enable mutation.
@@ -544,6 +556,7 @@ function _createVNode(
     }
   }
 
+  // 将vnode类型信息编码为位图
   // encode the vnode type information into a bitmap
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
