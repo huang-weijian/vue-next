@@ -49,6 +49,7 @@ export function trackRefValue(ref: RefBase<any>) {
 export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
   ref = toRaw(ref)
   if (ref.dep) {
+    // 开发状态下，实现热更新
     if (__DEV__) {
       triggerEffects(ref.dep, {
         target: ref,
