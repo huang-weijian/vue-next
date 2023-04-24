@@ -101,9 +101,12 @@ function createGetter(isReadonly = false, shallow = false) {
     } else if (
       // 获取原始对象
       key === ReactiveFlags.RAW &&
+      // 并且是响应式对象
       receiver ===
+        // 是否是只读
         (isReadonly
-          ? shallow
+          ? // 是否是浅表响应式对象
+            shallow
             ? shallowReadonlyMap
             : readonlyMap
           : shallow
@@ -144,8 +147,8 @@ function createGetter(isReadonly = false, shallow = false) {
     // 是ref对象
     if (isRef(res)) {
       // ref unwrapping - does not apply for Array + integer key.
-      // 如果是数组且是整型的key，直接返回数值，不用解包
-      // 如果不是数组或者不是整型key，则需要解包
+      // 如果源数据是数组且是整型的key，直接返回数值，不用解包
+      // 如果源数据不是数组或者不是整型key，则需要解包
       const shouldUnwrap = !targetIsArray || !isIntegerKey(key)
       return shouldUnwrap ? res.value : res
     }
